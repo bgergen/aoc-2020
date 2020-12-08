@@ -3,11 +3,11 @@ const { getInputString } = require('../../utils');
 const input = getInputString(__dirname).split('\n');
 
 function countTrees(map, [x, y]) {
-  return map.reduce((numTrees, row, i) => {
-    if (i % y !== 0) return numTrees;
+  return map.filter((row, i) => {
+    if (i % y !== 0) return false;
     const pos = (i * x / y) % row.length;
-    return row[pos] === '#' ? numTrees + 1 : numTrees;
-  }, 0);
+    return row[pos] === '#';
+  }).length;
 }
 
 function getTreeProduct(map, slopes) {

@@ -39,14 +39,13 @@ const validators = {
 };
 
 function countValidPassports(passports, validatorFns) {
-  return passports.reduce((numValid, passport) => {
-    const isValid = REQUIRED_FIELDS.every(field => {
+  return passports.filter(passport => {
+    return REQUIRED_FIELDS.every(field => {
       return validatorFns
         ? validatorFns[field](passport[field] || '')
         : passport.hasOwnProperty(field);
     })
-    return isValid ? numValid + 1 : numValid;
-  }, 0);
+  }).length;
 }
 
 // Part 1: 190
