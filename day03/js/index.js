@@ -1,9 +1,6 @@
-const fs = require('fs');
-const path = require('path');
+const { getInputString } = require('../../utils');
 
-const input = fs
-  .readFileSync(path.join(__dirname, '../input.txt'), 'utf8')
-  .split('\n');
+const input = getInputString(__dirname).split('\n');
 
 function countTrees(map, [x, y]) {
   return map.reduce((numTrees, row, i) => {

@@ -1,10 +1,6 @@
-const fs = require('fs');
-const path = require('path');
+const { getInputString } = require('../../utils');
 
-const input = fs
-  .readFileSync(path.join(__dirname, '../input.txt'), 'utf8')
-  .split('\n')
-  .map(Number);
+const input = getInputString(__dirname).split('\n').map(Number);
 
 const SUM = 2020;
 

@@ -1,8 +1,6 @@
-const fs = require('fs');
-const path = require('path');
+const { getInputString } = require('../../utils');
 
-const input = fs
-  .readFileSync(path.join(__dirname, '../input.txt'), 'utf8')
+const input = getInputString(__dirname)
   .split('\n')
   .map(r => r.split(/[\-\:\s]/).filter(Boolean));
 
