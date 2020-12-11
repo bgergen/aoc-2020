@@ -2,15 +2,15 @@ const { getInputString } = require('../../utils');
 
 const input = getInputString(__dirname).split('\n');
 
-function parseRule(rule) {
+function parseRule(rule, regex) {
   const outerBag = rule.split(' ').slice(0, 2).join(' ');
-  const innerBags = rule.match(/(?<=\d\s).*?(?=\sbag)/g);
-  return [outerBag, innerBags || []];
+  const innerBags = rule.match(regex) || [];
+  return [outerBag, innerBags];
 }
 
-function buildDataObj(rules) {
+function buildDataObj1(rules) {
   return rules.reduce((rulesObj, rule) => {
-    const [outerBag, innerBags] = parseRule(rule);
+    const [outerBag, innerBags] = parseRule(rule, /(?<=\d\s).*?(?=\sbag)/g);
     innerBags.forEach(bag => {
       if (!rulesObj[bag]) {
         rulesObj[bag] = [outerBag];
@@ -22,8 +22,21 @@ function buildDataObj(rules) {
   }, {});
 }
 
-function getNumBags(rules, bagZero) {
-  const bagObj = buildDataObj(rules);
+function buildDataObj2(rules) {
+  return rules.reduce((rulesObj, rule) => {
+    const [outerBag, innerBags] = parseRule(rule, /\d\s.*?(?=\sbag)/g);
+    const innerBagObj = innerBags.reduce((bagObj, bag) => {
+      const [numBags, ...bagType] = bag.split(' ');
+      bagObj[bagType.join(' ')] = numBags;
+      return bagObj;
+    }, {});
+    rulesObj[outerBag] = innerBagObj;
+    return rulesObj;
+  }, {});
+}
+
+function getNumBags1(rules, bagZero) {
+  const bagObj = buildDataObj1(rules);
   const bags = new Set();
   const bagQueue = bagObj[bagZero];
   while (bagQueue.length) {
@@ -37,5 +50,26 @@ function getNumBags(rules, bagZero) {
   return bags.size;
 }
 
+function recursiveGetBags(dataObj, bagName) {
+  const innerBags = dataObj[bagName];
+  const innerBagNames = Object.keys(innerBags);
+
+  const numBags = innerBagNames.reduce((total, bagName) => {
+    return total + Number(innerBags[bagName]);
+  }, 0);
+
+  if (!innerBagNames.length) return numBags;
+  return innerBagNames.reduce((totalBags, bag) => {
+    return totalBags + (innerBags[bag] * recursiveGetBags(dataObj, bag));
+  }, numBags);
+}
+
+function getNumBags2(rules, bagZero) {
+  const bagObj = buildDataObj2(rules);
+  return recursiveGetBags(bagObj, bagZero);
+}
+
 // Part 1: 235
-console.log(getNumBags(input, 'shiny gold'));
+console.log(getNumBags1(input, 'shiny gold'));
+// Part2: 158493
+console.log(getNumBags2(input, 'shiny gold'));
